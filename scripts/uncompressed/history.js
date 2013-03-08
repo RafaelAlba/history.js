@@ -313,6 +313,11 @@
 			 * MSIE 6 requires the entire hash to be encoded for the hashes to trigger the onHashChange event
 			 */
 			hashEscape: Boolean(History.isInternetExplorer() && History.getInternetExplorerMajorVersion() < 7)
+
+      /*
+       * chrome, safari, ie (browsers that fire PopState on page load)
+       */
+      initialPopState: Boolean(navigator.vendor === 'Google Inc.' || navigator.vendor === 'Apple Computer, Inc.')
 		};
 
 		/**
@@ -1667,6 +1672,9 @@
 					// There has been no change (just the page's hash has finally propagated)
 					//History.debug('History.onPopState: no change', newState, History.savedStates);
 					History.busy(false);
+
+          if (History.bugs.initialPopState) History.Adapter.didBecomeReady();
+
 					return false;
 				}
 
@@ -1934,6 +1942,9 @@
 
 		} // !History.emulated.pushState
 
+
+    if (!History.bugs.initialPopState) History.Adapter.didBecomeReady();
+    // else it becomes ready after the initial PopState
 
 	}; // History.initCore
 

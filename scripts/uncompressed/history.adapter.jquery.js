@@ -21,6 +21,10 @@
 
 	// Add the Adapter
 	History.Adapter = {
+
+    historyReady: false,
+    onDomLoadCallbacks: $.Callbacks('once unique'),
+
 		/**
 		 * History.Adapter.bind(el,event,callback)
 		 * @param {Element|string} el
@@ -64,8 +68,18 @@
 		 * @return {void}
 		 */
 		onDomLoad: function(callback) {
-			jQuery(callback);
-		}
+      if(this.historyReady) {
+        jQuery(callback);
+      } else {
+        this.onDomLoadCallbacks.add( callback );
+      }
+		},
+
+    didBecomeReady: function() {
+      this.historyReady = true;
+      this.onDomLoadCallbacks.fire();
+      this.onDomLoadCallbacks.disable();
+    }
 	};
 
 	// Try and Initialise History
